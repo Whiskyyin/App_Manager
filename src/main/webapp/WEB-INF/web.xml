@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+  <display-name></display-name>	
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <!-- 指定Spring Bean的配置文件所在目录 
+              在web.xml中通过contextConfigLocation配置spring，
+       contextConfigLocation参数定义了要装入的 Spring 配置文件。 
+  -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:applicationContext-*.xml</param-value>
+	</context-param>
+  
+	 <!-- spring字符编码过滤器start-->
+	<filter>
+		<!--① Spring 编码过滤器 -->
+	  <filter-name>encodingFilter</filter-name>
+	  <filter-class>
+	      org.springframework.web.filter.CharacterEncodingFilter
+	  </filter-class>
+	  <!--② 编码方式  -->
+	  <init-param> 
+	      <param-name>encoding</param-name>
+	      <param-value>UTF-8</param-value>
+	  </init-param>
+	  <!--③ 强制进行编码转换 -->
+	  <init-param>
+	      <param-name>forceEncoding</param-name>
+	      <param-value>true</param-value>
+	  </init-param>
+	 </filter>
+	 <!-- ② 过滤器的匹配 URL -->
+	   <filter-mapping> 
+	       <filter-name>encodingFilter</filter-name>
+	       <url-pattern>/*</url-pattern>
+	   </filter-mapping>
+	<!-- spring字符编码过滤器end-->
+	
+	<!-- Spring MVC配置 -->
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:springmvc-servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	 <!-- Spring配置 -->
+	<!-- 当系统启动的时候，spring需要进行一些资源加载或者配置，都需要使用此监听去做 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<!-- log4j配置start -->
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>classpath:log4j.properties</param-value>
+	</context-param>
+	<context-param>
+	<!-- 指定系统根目录路径 -->
+	    <param-name>webAppRootKey</param-name>
+	    <param-value>SMBMMVC.root</param-value>
+	   </context-param>
+	<!-- Spring 加载 Log4j 的监听 -->
+	<listener>
+		<listener-class>
+			org.springframework.web.util.Log4jConfigListener
+		</listener-class>
+	</listener>
+	<!-- log4j配置end -->
+</web-app>

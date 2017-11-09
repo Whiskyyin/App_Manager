@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.appsys.mapper.AppVersionMapper">
+	
+	<!-- 查看app版本号 列表-->
+	<select id="getAppVersionList" resultType="AppVersion">
+		select v.*,
+			(select a.softwareName from app_info a where a.id=v.appId ) as appName,
+			(select valueName from data_dictionary d where  v.publishStatus=d.valueId AND d.typeCode='PUBLISH_STATUS') as publishStatusName
+			from  app_version  v 
+				where v.appId = #{appId}
+		order by v.creationDate DESC
+	</select>
+	 
+	 <!-- 删除版本 -->
+	 <delete id="deleteVersionByAppId">
+		delete from app_version where appId = #{appId}
+	</delete>
+	
+	<!-- 查询版本号 -->
+	<select id="getAppVersionById" resultType="AppVersion">
+	select * from app_version where id = #{id}
+	</select>
+	
+	<!-- 添加版本号 -->
+	<insert id="add" parameterType="AppVersion" useGeneratedKeys="true" keyProperty="id">
+		insert into app_version (appId,versionNo,versionInfo,publishStatus,
+								downloadLink,versionSize,apkLocPath,apkFileName,createdBy,creationDate)
+				values(#{appId},#{versionNo},#{versionInfo},#{publishStatus},#{downloadLink},
+					   #{versionSize},#{apkLocPath},#{apkFileName},#{createdBy},#{creationDate})
+	</insert>
+	
+	<!-- 修改版本号 -->
+		<update id="modify" parameterType="AppVersion">
+		update app_version
+		<trim prefix="set" suffixOverrides="," suffix="where id=#{id}">
+			<if test="versionNo != null">versionNo=#{versionNo},</if>
+			<if test="versionInfo != null">versionInfo=#{versionInfo},</if>
+			<if test="publishStatus != null">publishStatus=#{publishStatus},</if>
+			<if test="downloadLink != null">downloadLink=#{downloadLink},</if>
+			<if test="apkLocPath != null">apkLocPath=#{apkLocPath},</if>
+			<if test="versionSize != null">versionSize=#{versionSize},</if>
+			<if test="apkFileName != null">apkFileName=#{apkFileName},</if>
+			<if test="modifyBy != null">modifyBy=#{modifyBy},</if>
+			<if test="modifyDate != null">modifyDate=#{modifyDate},</if>
+		</trim>
+	</update>
+
+	<!-- 修改logo图片路径 -->
+	<update id="deleteApkFile" parameterType="Integer">
+		update app_version 
+			set apkLocPath=null,
+				downloadLink=null,
+				apkFileName=null
+			where id = #{id}
+	</update>
+	
+</mapper>
